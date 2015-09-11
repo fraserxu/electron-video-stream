@@ -22,16 +22,11 @@ peer.on('connection', function (conn) {
       }},
       function (stream) {
 
-        // console.log('stream', URL.createObjectURL(stream))
-
-        // video.src = URL.createObjectURL(stream)
-
         var call = peer.call(conn.peer, stream)
 
         call.on('stream', function (stream) {
           console.log('on call stream', stream)
         })
-
       },
       error
     )
@@ -41,18 +36,6 @@ peer.on('connection', function (conn) {
     if (err) throw err
   }
 })
-
-peer.on('call', function (call) {
-  console.log('on call', call)
-
-
-})
-
-peer.on('open', function (id) {
-  console.log('My ID ', id)
-})
-
-
 
 },{"peerjs":6}],2:[function(require,module,exports){
 module.exports.RTCSessionDescription = window.RTCSessionDescription ||
