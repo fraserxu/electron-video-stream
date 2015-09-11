@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify main.js > main.bundle.js && browserify caller.js > caller.bundle.js",
+    "build": "browserify main.js | uglifyjs -c > main.bundle.js && browserify caller.js | uglifyjs -c > caller.bundle.js",
     "watch": "watchify main.js -o bundle.js"
   },
   "repository": {
@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "browserify": "^11.1.0",
+    "uglifyify": "^3.0.1",
     "watchify": "^3.4.0"
   }
 }
