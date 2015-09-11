@@ -10,7 +10,7 @@ peer.on('connection', function (conn) {
 peer.on('open', function (id) {
   console.log('My ID ', id)
 
-  var conn = peer.connect('wcl-pi')
+  var conn = peer.connect('electron-video')
 })
 
 peer.on('call', function (call) {

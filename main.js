@@ -1,7 +1,9 @@
 var Peer = require('peerjs')
 
 var video = document.querySelector('video')
-var peer = new Peer('wcl-pi', { key: 'ob1bohiqjkedn29' })
+var peer = new Peer('electron-video', { key: 'ob1bohiqjkedn29' })
+
+console.log('peer', peer)
 
 peer.on('connection', function (conn) {
   console.log('On connection', conn)
@@ -20,6 +22,8 @@ peer.on('connection', function (conn) {
         ]
       }},
       function (stream) {
+
+        console.log('stream', stream)
 
         var call = peer.call(conn.peer, stream)
 
