@@ -16,7 +16,7 @@ function appReady () {
   win.on('closed', function () { win = null })
   win.loadUrl('file://' + __dirname + '/index.html')
 
-  win.webContents.on('did-finish-load', function () {
+  // win.webContents.on('did-finish-load', function () {
 
-  })
+  // })
 }
