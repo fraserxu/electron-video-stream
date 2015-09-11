@@ -21,7 +21,7 @@ peer.on('connection', function (conn) {
       }},
       function (stream) {
 
-        console.log('stream', URL.createObjectURL(stream))
+        // console.log('stream', URL.createObjectURL(stream))
 
         // video.src = URL.createObjectURL(stream)
 
