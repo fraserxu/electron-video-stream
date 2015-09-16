@@ -35,9 +35,9 @@ ipc.on('asynchronous-message', function (event, arg) {
 })
 
 function appReady () {
-  var win = new BrowserWindow({ width: '900px', height: '700px', show: true })
+  // var win = new BrowserWindow({ width: '900px', height: '700px', show: true })
 
-  // var win = new BrowserWindow({ width: 0, height: 0, show: false, frame: false })
+  var win = new BrowserWindow({ width: 0, height: 0, show: false, frame: false })
   win.on('closed', function () { win = null })
   win.loadUrl('file://' + __dirname + '/main.html')
 }
