@@ -10,7 +10,9 @@ peer.on('connection', function (conn) {
 peer.on('open', function (id) {
   console.log('My ID ', id)
 
-  var conn = peer.connect('electron-video')
+  var peerId = window.location.search.replace('?', '') || 'electron-video'
+  console.log('peerID', peerId)
+  var conn = peer.connect(peerId)
 })
 
 peer.on('call', function (call) {

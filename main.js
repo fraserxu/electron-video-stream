@@ -1,41 +1,46 @@
 var Peer = require('peerjs')
+var ipc = require('ipc')
 
 var video = document.querySelector('video')
-var peer = new Peer('electron-video', { key: 'ob1bohiqjkedn29' })
 
-console.log('peer', peer)
+ipc.send('asynchronous-message', 'ping')
+ipc.on('asynchronous-reply', function (arg) {
+  var peer = new Peer(arg || 'electron-video', { key: 'ob1bohiqjkedn29' })
 
-peer.on('connection', function (conn) {
-  console.log('On connection', conn)
+  console.log('peer', peer)
 
-  MediaStreamTrack.getSources(function (sources) {
-    console.log(sources)
+  peer.on('connection', function (conn) {
+    console.log('On connection', conn)
 
-    var videoSources = sources.filter(function (source) {
-      source.kind === 'video'
+    MediaStreamTrack.getSources(function (sources) {
+      console.log(sources)
+
+      var videoSources = sources.filter(function (source) {
+        source.kind === 'video'
+      })
+
+      navigator.webkitGetUserMedia({
+        video: {
+          optional: [
+            { sourceId: videoSources[0] }
+          ]
+        }},
+        function (stream) {
+
+          console.log('stream', stream)
+
+          var call = peer.call(conn.peer, stream)
+
+          call.on('stream', function (stream) {
+            console.log('on call stream', stream)
+          })
+        },
+        error
+      )
     })
 
-    navigator.webkitGetUserMedia({
-      video: {
-        optional: [
-          { sourceId: videoSources[0] }
-        ]
-      }},
-      function (stream) {
-
-        console.log('stream', stream)
-
-        var call = peer.call(conn.peer, stream)
-
-        call.on('stream', function (stream) {
-          console.log('on call stream', stream)
-        })
-      },
-      error
-    )
+    function error (err) {
+      if (err) throw err
+    }
   })
-
-  function error (err) {
-    if (err) throw err
-  }
 })

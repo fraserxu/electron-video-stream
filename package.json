@@ -4,9 +4,8 @@
   "description": "Use electron to capture video",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify main.js | uglifyjs -c > main.bundle.js && browserify caller.js | uglifyjs -c > caller.bundle.js",
-    "watch": "watchify main.js -o main.bundle.js & watchify caller.js -o caller.bundle.js"
+    "build": "browserify caller.js | uglifyjs -c > caller.bundle.js",
+    "watch": "watchify caller.js -o caller.bundle.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +18,8 @@
   },
   "homepage": "https://github.com/fraserxu/electron-video#readme",
   "dependencies": {
+    "electron-prebuilt": "^0.32.3",
+    "meow": "^3.3.0",
     "peerjs": "^0.3.14"
   },
   "devDependencies": {
