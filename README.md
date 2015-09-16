@@ -38,6 +38,17 @@ Development
 
 You may also need to run `chmod +x cli.js` to make it executable.
 
+### To publish
+
+I use gh-pages to host static page.
+
+```
+git checkout gh-pages
+git reset --hard origin/master
+git add --all
+git commit -m 'gh-pages update'
+git push origin gh-pages
+```
 
 License
 =======
