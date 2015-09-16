@@ -1,7 +1,12 @@
 electron-video-stream
 -----------------------
 
-Use electron to stream video to the Internet
+Use electron to stream video to the Internet.
+
+How it works
+
+* Use electron to capture the video stream
+* webRTC to create connection
 
 Usage
 =====

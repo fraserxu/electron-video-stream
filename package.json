@@ -1,6 +1,6 @@
 {
   "name": "electron-video-stream",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Use electron to capture video",
   "main": "index.js",
   "scripts": {
