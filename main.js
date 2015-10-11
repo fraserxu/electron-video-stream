@@ -20,6 +20,7 @@ ipc.on('asynchronous-reply', function (arg) {
       })
 
       navigator.webkitGetUserMedia({
+        audio: true,
         video: {
           optional: [
             { sourceId: videoSources[0] }
