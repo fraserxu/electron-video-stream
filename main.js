@@ -1,20 +1,19 @@
-var Peer = require('peerjs')
-var ipc = require('ipc')
+var swarm = require('webrtc-swarm')
+var signalhub = require('signalhub')
 
+var ipcRenderer = require('electron').ipcRenderer
+var hub = signalhub('electron-video-stream', ['https://signalhub.herokuapp.com/'])
+
+var sw = swarm(hub)
 var video = document.querySelector('video')
 
-ipc.send('asynchronous-message', 'ping')
-ipc.on('asynchronous-reply', function (arg) {
-  var peer = new Peer(arg || 'electron-video', { key: 'ob1bohiqjkedn29' })
+ipcRenderer.send('asynchronous-message', 'ping')
+ipcRenderer.on('asynchronous-reply', function (arg) {
 
-  console.log('peer', peer)
+  console.log('on reply...')
 
-  peer.on('connection', function (conn) {
-    console.log('On connection', conn)
-
+  sw.on('peer', function (peer, id) {
     MediaStreamTrack.getSources(function (sources) {
-      console.log(sources)
-
       var videoSources = sources.filter(function (source) {
         source.kind === 'video'
       })
@@ -27,21 +26,22 @@ ipc.on('asynchronous-reply', function (arg) {
           ]
         }},
         function (stream) {
-
+          peer._pc.addStream(stream)
           console.log('stream', stream)
-
-          var call = peer.call(conn.peer, stream)
-
-          call.on('stream', function (stream) {
-            console.log('on call stream', stream)
-          })
         },
         error
       )
     })
-
-    function error (err) {
-      if (err) throw err
-    }
+    console.log('connected to a new peer:', id, peer)
+    console.log('total peers:', sw.peers.length)
   })
+
+  sw.on('disconnect', function (peer, id) {
+    console.log('disconnected from a peer:', id)
+    console.log('total peers:', sw.peers.length)
+  })
+
+  function error (err) {
+    if (err) throw err
+  }
 })
