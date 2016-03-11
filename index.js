@@ -6,7 +6,6 @@ const path = require('path')
 const electron = require('electron')
 
 const app = electron.app
-const ipcMain = electron.ipcMain
 const BrowserWindow = electron.BrowserWindow
 let mainWindow
 
@@ -49,11 +48,3 @@ app.on('activate', function () {
   }
 })
 
-// send the camera peer ID to the rendering process
-ipcMain.on('asynchronous-message', function (event, arg) {
-  let input = argv._[0] || argv.i || argv.input
-
-  console.log('Camera peer ID: ', input)
-
-  event.sender.send('asynchronous-reply', input)
-})

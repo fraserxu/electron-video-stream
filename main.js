@@ -1,18 +1,40 @@
-var swarm = require('webrtc-swarm')
+var cuid = require('cuid')
 var signalhub = require('signalhub')
+var SimplePeer = require('simple-peer')
 
-var ipcRenderer = require('electron').ipcRenderer
 var hub = signalhub('electron-video-stream', ['https://signalhub.herokuapp.com/'])
+var me = cuid()
+var stream
+var peer0
 
-var sw = swarm(hub)
 var video = document.querySelector('video')
 
-ipcRenderer.send('asynchronous-message', 'ping')
-ipcRenderer.on('asynchronous-reply', function (arg) {
+// listen on join event
+hub.subscribe('/electron-video-stream-channel')
+  .on('data', function (message) {
+    console.log('new message received', message)
+    if (message.type === 'join') {
+      joinHandler(message)
+    }
+  })
 
-  console.log('on reply...')
+function joinHandler (message) {
+  console.log('on join', message)
+  createPeer0(function (err, peer0) {
+    peer0.on('signal', function (data) {
+      hub.broadcast('/electron-video-stream-channel', {
+        type: 'signal',
+        from: me,
+        data: data
+      })
+    })
+  })
+}
 
-  sw.on('peer', function (peer, id) {
+function getStream (cb) {
+  if (stream) {
+    cb(null, stream)
+  } else {
     MediaStreamTrack.getSources(function (sources) {
       var videoSources = sources.filter(function (source) {
         source.kind === 'video'
@@ -26,22 +48,33 @@ ipcRenderer.on('asynchronous-reply', function (arg) {
           ]
         }},
         function (stream) {
-          peer._pc.addStream(stream)
-          console.log('stream', stream)
+          // video.src = window.URL.createObjectURL(stream)
+          // video.play()
+          stream = stream
+          cb(null, stream)
         },
-        error
+        function (err) {
+          cb(err)
+        }
       )
     })
-    console.log('connected to a new peer:', id, peer)
-    console.log('total peers:', sw.peers.length)
-  })
-
-  sw.on('disconnect', function (peer, id) {
-    console.log('disconnected from a peer:', id)
-    console.log('total peers:', sw.peers.length)
-  })
-
-  function error (err) {
-    if (err) throw err
   }
-})
+}
+
+function createPeer0 (cb) {
+  if (peer0) {
+    cb(null, peer0)
+  } else {
+    getStream(function (err, stream) {
+      if (err) {
+        cb(err)
+      }
+      peer0 = new SimplePeer({
+        initiator: true,
+        trickle: false,
+        stream: stream
+      })
+      cb(null, peer0)
+    })
+  }
+}

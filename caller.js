@@ -1,49 +1,36 @@
-var swarm = require('webrtc-swarm')
+var cuid = require('cuid')
 var signalhub = require('signalhub')
+var SimplePeer = require('simple-peer')
 
 var hub = signalhub('electron-video-stream', ['https://signalhub.herokuapp.com/'])
+var me = cuid()
 
-var sw = swarm(hub)
-
+var peer0 = new SimplePeer()
 var video = document.querySelector('video')
 
-sw.on('peer', function (peer, id) {
-  console.log('connected to a new peer:', id, peer)
-  console.log('total peers:', sw.peers.length)
-
-  peer.on('stream', function (stream) {
-    console.log('on stream', stream)
-    // got remote video stream, now let's show it in a video tag
-    // var video = document.querySelector('video')
-    // video.src = window.URL.createObjectURL(stream)
-    // video.play()
+hub.subscribe('/electron-video-stream-channel')
+  .on('data', function (message) {
+    console.log('new message received', message)
+    if (message.type === 'join') return
+    if (message.type === 'signal') {
+      peer0.signal(message.data)
+    }
   })
+
+// join
+hub.broadcast('/electron-video-stream-channel', {
+  type: 'join',
+  from: me
 })
 
-sw.on('disconnect', function (peer, id) {
-  console.log('disconnected from a peer:', id)
-  console.log('total peers:', sw.peers.length)
+peer0.on('singal', function (data) {
+  console.log('on signal', data)
 })
 
-// sw.on('connection', function (conn) {
-//   console.log('On connection', conn)
-// })
-
-// sw.on('open', function (id) {
-//   console.log('My ID ', id)
-
-//   var peerId = window.location.search.replace('?', '') || 'electron-video'
-//   console.log('peerID', peerId)
-//   var conn = peer.connect(peerId)
-// })
-
-// sw.on('call', function (call) {
-//   console.log('on call', call)
-
-//   call.answer()
-
-//   call.on('stream', function (stream) {
-//     video.src = URL.createObjectURL(stream)
-//   })
-
-// })
+peer0.on('stream', function (stream) {
+  console.log('on stream', stream)
+  // got remote video stream, now let's show it in a video tag
+  // var video = document.querySelector('video')
+  video.src = window.URL.createObjectURL(stream)
+  video.play()
+})
